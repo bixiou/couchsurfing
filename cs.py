@@ -7,8 +7,8 @@ from selenium.webdriver.common.keys import Keys
 
  #Chrome Options
 chromeOptions = webdriver.ChromeOptions()
-prefs = {"profile.managed_default_content_settings.images":2}
-chromeOptions.add_experimental_option("prefs",prefs)
+# prefs = {"profile.managed_default_content_settings.images":2}
+# chromeOptions.add_experimental_option("prefs",prefs)
 driver = webdriver.Chrome(chrome_options=chromeOptions)
 
 def loginFacebook(driver):
@@ -38,7 +38,7 @@ def loginCS(driver):
 
 loginCS(driver)
 # Go to each user page
-time.sleep(12)
+time.sleep(10)
 driver.get("https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=5378052")
 # Send message
 
