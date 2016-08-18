@@ -27,11 +27,12 @@ def loginFacebook(driver):
 		sys.exit()
 
 def loginCS(driver):
-	driver.implicitly_wait(120)
+	driver.implicitly_wait(10)
 	driver.get("https://www.couchsurfing.com/users/sign_in")
-	time.sleep(3)
+	time.sleep(1)
 	driver.find_element_by_id('user_login').send_keys("adrifaoudai2@hotmail.com")
 	driver.find_element_by_id('user_password').send_keys("hackhack")
+	driver.find_element_by_name("commit").click()
 
 loginCS(driver)
 
