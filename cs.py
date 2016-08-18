@@ -5,6 +5,10 @@ from selenium.common.exceptions import TimeoutException
 import time,re,sys
 from selenium.webdriver.common.keys import Keys
 
+login = "adrifaoudai2@hotmail.com"
+password = "hackhack"
+url = "https://www.couchsurfing.com/members/hosts?latitude=45.764043&longitude=4.835659&search_query=Lyon&search_type=host"
+
  #Chrome Options
 chromeOptions = webdriver.ChromeOptions()
 # prefs = {"profile.managed_default_content_settings.images":2}
@@ -27,19 +31,31 @@ def loginFacebook(driver):
 		sys.exit()
 
 def loginCS(driver):
-	driver.implicitly_wait(10)
-	driver.get("https://www.couchsurfing.com/users/sign_in")
-	time.sleep(1)
-	driver.find_element_by_id('user_login').send_keys("adrifaoudai2@hotmail.com")
-	driver.find_element_by_id('user_password').send_keys("hackhack")
+	driver.implicitly_wait(100)
+	driver.get("https://www.couchsurfing.org/n/places/paris-ile-de-france-france")
+	time.sleep(3)
+	driver.find_element_by_id('user_login').send_keys(login)
+	driver.find_element_by_id('user_password').send_keys(password)
 	driver.find_element_by_name("commit").click()
 
 # Find users IDs
 
 loginCS(driver)
 # Go to each user page
-time.sleep(10)
-driver.get("https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=5378052")
+time.sleep(8)
+driver.get("https://www.couchsurfing.com/users/sign_in")
+time.sleep(5)
+users = []
+for element in driver.find_elements_by_css_selector("a.mod-black"):
+    users.append(element.get_attribute("href"))
+print(users)
+# users = map(replace("users/","couch_visits/new?cs_new_fe=true&to_id="),users)
+# print(users)
+
+# https://www.couchsurfing.com/users/2468753
+# https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=2468753
+
+# driver.get("https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=5378052")
 # Send message
 
 # envoyer requete a utilisateur 5378052:
