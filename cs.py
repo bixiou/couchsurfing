@@ -34,8 +34,11 @@ driver.get(url)
 time.sleep(5)
 users0 = []
 users = []
+names = []
 for element in driver.find_elements_by_css_selector("a.mod-black"):
     users0.append(element.get_attribute("href"))
+    names.append(element.text)
+print(len(users0), len(names))
 for el in users0:
 	users.append(el.replace("https://www.couchsurfing.com/users/",""))
 
