@@ -34,7 +34,13 @@ def loginCS(driver):
 	driver.find_element_by_id('user_password').send_keys("hackhack")
 	driver.find_element_by_name("commit").click()
 
+# Find users IDs
+
 loginCS(driver)
+# Go to each user page
+time.sleep(12)
+driver.get("https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=5378052")
+# Send message
 
 # envoyer requete a utilisateur 5378052:
 # https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=5378052
