@@ -15,21 +15,6 @@ chromeOptions = webdriver.ChromeOptions()
 # chromeOptions.add_experimental_option("prefs",prefs)
 driver = webdriver.Chrome(chrome_options=chromeOptions)
 
-def loginFacebook(driver):
-	driver.implicitly_wait(120)
-	driver.get("https://www.facebook.com/")
-	#assert "Welcome to Facebook" in driver.title
-	time.sleep(3)
-	driver.find_element_by_id('email').send_keys(facebook_username)
-	driver.find_element_by_id('pass').send_keys(facebook_password)
-	driver.find_element_by_id("loginbutton").click()
-	global all_cookies
-	all_cookies = driver.get_cookies()
-	html = driver.page_source
-	if "Incorrect Email/Password Combination" in html:
-		print "[!] Incorrect Facebook username (email address) or password"
-		sys.exit()
-
 def loginCS(driver):
 	driver.implicitly_wait(100)
 	driver.get("https://www.couchsurfing.org/n/places/paris-ile-de-france-france")
@@ -43,14 +28,16 @@ def loginCS(driver):
 loginCS(driver)
 # Go to each user page
 time.sleep(8)
-driver.get("https://www.couchsurfing.com/users/sign_in")
+driver.get(url)
 time.sleep(5)
+users0 = []
 users = []
 for element in driver.find_elements_by_css_selector("a.mod-black"):
-    users.append(element.get_attribute("href"))
+    users0.append(element.get_attribute("href"))
+for el in users0:
+	users.append(el.replace("users/","couch_visits/new?cs_new_fe=true&to_id="))
+
 print(users)
-# users = map(replace("users/","couch_visits/new?cs_new_fe=true&to_id="),users)
-# print(users)
 
 # https://www.couchsurfing.com/users/2468753
 # https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=2468753
