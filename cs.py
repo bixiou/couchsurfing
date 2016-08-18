@@ -9,6 +9,13 @@ login = "adrifaoudai2@hotmail.com"
 password = "hackhack"
 url = "https://www.couchsurfing.com/members/hosts?latitude=45.764043&longitude=4.835659&search_query=Lyon&search_type=host"
 
+# yyyy-mm-dd
+arrival_date = "2017-06-13"
+departure_date="2018-06-13"
+
+
+message = "Hi!!! :))))))))))))qzmmoij"
+
  #Chrome Options
 chromeOptions = webdriver.ChromeOptions()
 # prefs = {"profile.managed_default_content_settings.images":2}
@@ -18,18 +25,32 @@ driver = webdriver.Chrome(chrome_options=chromeOptions)
 def loginCS(driver):
 	driver.implicitly_wait(100)
 	driver.get("https://www.couchsurfing.org/n/places/paris-ile-de-france-france")
-	time.sleep(3)
+	time.sleep(1)
 	driver.find_element_by_id('user_login').send_keys(login)
 	driver.find_element_by_id('user_password').send_keys(password)
 	driver.find_element_by_name("commit").click()
 
+def writeMessage():
+	return message
 # Find users IDs
 
+def write_to_user(user_url):
+	driver.get(user_url)
+	driver.find_element_by_name('arrival').send_keys(arrival_date)
+	driver.find_element_by_name('departure').send_keys(departure_date)
+	driver.find_element_by_name('body').send_keys(writeMessage())
+	time.sleep(2)
+	driver.find_element_by_name('status').click()
+	return
+
 loginCS(driver)
-# Go to each user page
-time.sleep(8)
+time.sleep(3)
+
 driver.get(url)
-time.sleep(5)
+print("go PARIS")
+
+time.sleep(2)
+
 users0 = []
 users = []
 for element in driver.find_elements_by_css_selector("a.mod-black"):
@@ -37,7 +58,12 @@ for element in driver.find_elements_by_css_selector("a.mod-black"):
 for el in users0:
 	users.append(el.replace("users/","couch_visits/new?cs_new_fe=true&to_id="))
 
-print(users)
+print(users[1])
+
+
+write_to_user("https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=2559099")
+
+
 
 # https://www.couchsurfing.com/users/2468753
 # https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=2468753
