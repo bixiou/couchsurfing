@@ -13,18 +13,15 @@ from selenium.webdriver.common.keys import Keys
 
 
 
-
-
-
-
 ########## FILL THIS SECTION ##########
 
 
 ## You and your trip
+my_name="Tom"
 login = "adrifaoudai2@hotmail.com"  # replace identifiers by own
 password = "hackhack"
 
-location="Ubud, Indonesia"  #Specify both city and country to avoid confusion
+location="Bamako"  #Specify both city and country to avoid confusion
 
 arrival_date = "2017-06-13" # yyyy-mm-dd
 departure_date="2018-06-13"  # both needed please
@@ -35,7 +32,7 @@ is_flexible_departure = "Y" #  ("Y"/"N")
 number_of_travellers="1"
 
 ## Your potential hosts
-nb_users = 3  # How many people do you want to spam?
+nb_users = 10 # How many people do you want to spam?
 
 gender="All"  #in ["Male", "Female", "Other", "All"]
 min_age="18"  # empty string if no restriction. Min(min_age) is 18
@@ -81,7 +78,8 @@ def write(id, name):
     def writeMessage(name):
         # WARNING: "I am Adrien" below /!\
         #TODO: ameliorer le message
-        message = "Hello " + name + ", \n I am Adrien, currently traveling on my own in your beautiful country, and I'd like to stay at your place a couple of days: you seem really cool. I've already surfed and hosted dozens of times and I love CS, it's always been great experiences! \nCheers!"
+        message = "Dear " + name +", \n"
+        message +="My name is "+ my_name +", nice to meet you :) \n I am currently traveling on my own in your beautiful country, and I'd like to stay at your place a couple of days if that is fine with you: you seem really cool, and I am cool as well. I've already surfed and hosted dozens of times and I love CS, it's always been great experiences! \nCheers!"
         print(message)
         return message
 
@@ -129,7 +127,7 @@ def research():
 
 def users_info():
     users = []
-    time.sleep(3)
+    time.sleep(4)
     for element in driver.find_elements_by_css_selector("div.box-content div.card.mod-user a.mod-black"):
         users.append({"id": element.get_attribute("href").replace("https://www.couchsurfing.com/users/", ""),
                       "Surname": element.text.title().partition(' ')[0]})
@@ -145,6 +143,6 @@ users=users_info()
 print users
 
 # /!\ Before un-commenting the following lines, be sure you know what you are doing and check the number of users
-#for host in users:
-#    write(host['id'], host['Surname'])
+for host in users:
+    write(host['id'], host['Surname'])
 
