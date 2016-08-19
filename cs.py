@@ -35,7 +35,7 @@ is_flexible_departure = "Y" #  ("Y"/"N")
 number_of_travellers="1"
 
 ## Your potential hosts
-nb_users = 30  # How many people do you want to spam?
+nb_users = 3  # How many people do you want to spam?
 
 gender="All"  #in ["Male", "Female", "Other", "All"]
 min_age="18"  # empty string if no restriction. Min(min_age) is 18
@@ -47,6 +47,19 @@ restrict_research_by_dates= "N"           # ("Y"/"N")
 ########################################
 
 
+print("start")
+
+def wait_for(element):
+    def is_here(elem):
+        try:
+            elem
+        except:
+            return False
+        return True
+    while not is_here(element):
+        time.sleep(.2)
+    return
+
 while not gender in ["Male", "Female", "Other", "All"]:
     gender=raw_input("Please select correct gender (['Male', 'Female', 'Other', 'All']) :")
 
@@ -57,7 +70,7 @@ def loginCS(driver):
     driver.implicitly_wait(100)
     driver.get("https://www.couchsurfing.org/n/places/paris-ile-de-france-france")
     #TODO: definir proprement time.sleep(), ie attendre que la page ait charge
-    time.sleep(1)
+    wait_for(driver.find_element_by_id('user_login'))
     driver.find_element_by_id('user_login').send_keys(login)
     driver.find_element_by_id('user_password').send_keys(password)
     driver.find_element_by_name("commit").click()
@@ -91,30 +104,32 @@ def write(id, name):
 
 def research():
     #research city url from homepage
+    wait_for(driver.find_element_by_css_selector("div.selectize-input.items.has-options.full.has-items"))
     driver.find_element_by_css_selector("div.selectize-input.items.has-options.full.has-items").click()
-    time.sleep(3)
+    wait_for(driver.find_element_by_css_selector("fieldset.mod-inline-block-web div[data-value='host']"))
     driver.find_element_by_css_selector("fieldset.mod-inline-block-web div[data-value='host']").click()
-    time.sleep(3)
+    wait_for(driver.find_element_by_css_selector(
+        "div.header-search div[data-search-query-container] div.selectize-input.items.not-full input"))
     driver.find_element_by_css_selector(
         "div.header-search div[data-search-query-container] div.selectize-input.items.not-full input").send_keys(
         location)
-    time.sleep(3)
+    wait_for(driver.find_element_by_css_selector("button[title='Search']").click())
     driver.find_element_by_css_selector("button[title='Search']").click()
-    time.sleep(5)
 
     #adjust url for research parameters
+    wait_for(driver.find_elements_by_css_selector("div.box-content div.card.mod-user a.mod-black"))
     url = driver.current_url
     url += "&perPage=" + str(
         nb_users) + "&min_age=" + min_age + "&max_age=" + max_age + "&num_guests=" + number_of_travellers
     if restrict_research_by_dates == "Y":
         url += "&arrival_date=" + str(arrival_date) + "&departure_date=" + str(departure_date)
-
     driver.get(url)
     return
 
 
 def users_info():
     users = []
+    time.sleep(3)
     for element in driver.find_elements_by_css_selector("div.box-content div.card.mod-user a.mod-black"):
         users.append({"id": element.get_attribute("href").replace("https://www.couchsurfing.com/users/", ""),
                       "Surname": element.text.title().partition(' ')[0]})
@@ -123,13 +138,11 @@ def users_info():
 
 
 loginCS(driver)
-time.sleep(3)
 
 research()
-time.sleep(5)
 
 users=users_info()
-time.sleep(5)
+print users
 
 # /!\ Before un-commenting the following lines, be sure you know what you are doing and check the number of users
 #for host in users:
