@@ -11,20 +11,18 @@ from selenium.webdriver.common.keys import Keys
 # and where it has to be un-commented (for safety reasons)			(c) bixiou & bubu		free licence
 
 
-
-
-########## FILL THIS SECTION ##########
+########## FILL THIS SECTION + 'message' in the beginning of function write (l. 78) ##########
 
 
 ## You and your trip
-my_name="Tom"
-login = "adrifaoudai2@hotmail.com"  # replace identifiers by own
+my_name="Adrien"
+login = "adrifaoudai2@hotmail.com" # replace identifiers by own
 password = "hackhack"
 
-location="Bamako"  #Specify both city and country to avoid confusion
+location="Barcelona, Spain"  #Specify both city and country to avoid confusion
 
-arrival_date = "2017-06-13" # yyyy-mm-dd
-departure_date="2018-06-13"  # both needed please
+arrival_date = "2018-05-22" # yyyy-mm-dd
+departure_date="2018-05-24"  # both needed please
 is_flexible_arrival = "Y" # ("Y"/"N")
 is_flexible_departure = "Y" #  ("Y"/"N")
 
@@ -32,19 +30,15 @@ is_flexible_departure = "Y" #  ("Y"/"N")
 number_of_travellers="1"
 
 ## Your potential hosts
-nb_users = 10 # How many people do you want to spam?
+nb_users = 20 # How many people do you want to spam?
+# /!\ in order to make more than 20 requests (say n*20), the simplest is to make n requests with distinct age intervals
 
 gender="All"  #in ["Male", "Female", "Other", "All"]
 min_age="18"  # empty string if no restriction. Min(min_age) is 18
-max_age="100" # empty string if no restriction.
+max_age="35" # empty string if no restriction.
 restrict_research_by_dates= "N"           # ("Y"/"N")
 
-
-
 ########################################
-
-
-print("start")
 
 def wait_for(element):
     def is_here(elem):
@@ -60,8 +54,10 @@ def wait_for(element):
 while not gender in ["Male", "Female", "Other", "All"]:
     gender=raw_input("Please select correct gender (['Male', 'Female', 'Other', 'All']) :")
 
-chromeOptions = webdriver.ChromeOptions()
-driver = webdriver.Chrome(chrome_options=chromeOptions)
+# chromeOptions = webdriver.ChromeOptions()
+# driver = webdriver.Chrome(chrome_options=chromeOptions)
+# /!\ extract the .zip from https://sites.google.com/a/chromium.org/chromedriver/downloads and add the path below
+driver = webdriver.Chrome(executable_path="./chromedriver")
 
 def loginCS(driver):
     driver.implicitly_wait(100)
@@ -75,28 +71,36 @@ def loginCS(driver):
 
 def write(id, name):
 
-    def writeMessage(name):
-        # WARNING: "I am Adrien" below /!\
-        #TODO: ameliorer le message
-        message = "Dear " + name +", \n"
-        message +="My name is "+ my_name +", nice to meet you :) \n I am currently traveling on my own in your beautiful country, and I'd like to stay at your place a couple of days if that is fine with you: you seem really cool, and I am cool as well. I've already surfed and hosted dozens of times and I love CS, it's always been great experiences! \nCheers!"
-        print(message)
-        return message
+    message = "Bonjour " + name + "! Je serai à Strasbourg du 22 au 24 mai pour participer à une conférence de doctorants en économie. Tu m'as l'air sympa, et j'aimerais bien profiter de mes deux jours à Strasbourg pour faire ta connaissance. Est-ce que tu pourrais m'héberger ces deux nuits ? Mon train arrive à 20h30 le mardi, et je repars le jeudi soir (sauf si la grève m'oblige à partir le lendemain). Bien à toi."
 
-    user_url = "https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=" + str(id)
+#    user_url = "https://www.couchsurfing.com/couch_visits/new?cs_new_fe=true&to_id=" + str(id)
+    user_url = "https://www.couchsurfing.com/" + str(id)
     driver.get(user_url)
-    if is_flexible_arrival != "N":
-        driver.find_element_by_name('departure_flexible').click()
-    if is_flexible_arrival != "N":
-        driver.find_element_by_name('arrival_flexible').click()
-    driver.find_element_by_name('arrival').send_keys(arrival_date)
-    driver.find_element_by_name('departure').send_keys(departure_date)
-    driver.find_element_by_name('number_of_guests').clear()
-    driver.find_element_by_name('number_of_guests').send_keys(number_of_travellers)
-    driver.find_element_by_name('body').send_keys(writeMessage(name))
-    time.sleep(2)
-#	driver.find_element_by_name('status').click()
-#   WARNING !!!    uncomment to actually send messages
+    for el in driver.find_elements_by_css_selector("a.js-send-request"): #.replace("https://www.couchsurfing.com/", "") #
+        message_url = el.get_attribute("href").replace("&type=inline", "")
+    driver.get(message_url)
+    new_person = True
+    try:
+        driver.find_element_by_name('number_of_guests') # or any CSS selector characteristic of this page
+    except:
+        new_person = False
+    if new_person:
+        if is_flexible_departure != "N":
+            driver.find_element_by_name('departure_flexible').click()
+        if is_flexible_arrival != "N":
+            driver.find_element_by_name('arrival_flexible').click()
+
+        driver.find_element_by_name('arrival').send_keys(arrival_date)
+        driver.find_element_by_name('departure').send_keys(departure_date)
+        # driver.find_element_by_name('number_of_guests').clear()
+        # driver.find_element_by_name('number_of_guests').send_keys(number_of_travellers)
+        driver.find_element_by_name('body').send_keys(message)
+        time.sleep(15)
+        driver.find_element_by_name('status').click()
+        print(name)
+# #   WARNING !!!    uncomment previous line to actually send messages
+    else:
+        print("already messaged")
     return
 
 
@@ -128,8 +132,10 @@ def research():
 def users_info():
     users = []
     time.sleep(4)
-    for element in driver.find_elements_by_css_selector("div.box-content div.card.mod-user a.mod-black"):
-        users.append({"id": element.get_attribute("href").replace("https://www.couchsurfing.com/users/", ""),
+    # for element in driver.find_elements_by_css_selector("div.box-content div.card.mod-user a.mod-black"):
+    # for element in driver.find_elements_by_css_selector("div.host-results li.user-card a.user-card__content"):
+    for element in driver.find_elements_by_css_selector("li.user-card a.user-card__profile-link"):
+        users.append({"id": element.get_attribute("href").replace("https://www.couchsurfing.com/", ""),
                       "Surname": element.text.title().partition(' ')[0]})
     return users
 
@@ -137,12 +143,21 @@ def users_info():
 
 loginCS(driver)
 
-research()
+# research()
+# or paste directly the URL (then comment l. 81 to 84 (right before sending the message and be careful with the number of results perPage)
+wait_for(driver.find_element_by_css_selector("div.selectize-input.items.has-options.full.has-items"))
+url = "https://www.couchsurfing.com/members/hosts?utf8=%E2%9C%93&search_query=&placeid=&latitude=48.5734053&longitude=7.7521113&country=france&region=europe&city=Strasbourg&date_modal_dismissed=true&arrival_date=2018-05-22&departure_date=2018-05-24&num_guests=1&can_host%5Baccepting_guests%5D=1&can_host%5Bmaybe_accepting_guests%5D=1&last_login=2&join_date=0&gender=0&min_age=&max_age=30&languages_spoken=&interests=&smoking=0&radius=5&keyword=&host_sort=0&button="
+driver.get(url)
 
 users=users_info()
-print users
+print(users)
 
 # /!\ Before un-commenting the following lines, be sure you know what you are doing and check the number of users
 for host in users:
-    write(host['id'], host['Surname'])
+    # already_messaged = driver.find_elements_by_css_selector("ul.cs-thread-messages")
+    # if not already_messaged:
+    if (host['Surname'] != "Verified"):
+        write(host['id'], host['Surname'])
+        time.sleep(50) # so as to not be catched
+
 
